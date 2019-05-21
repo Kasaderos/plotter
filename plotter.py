@@ -1,7 +1,7 @@
 import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
-from py_expression_eval import Parser
+from parser import Parser
 '''
 sinonims = {["arctg", "arctag"] : "atan", 
                   ["arcsin",] : "asin",
@@ -11,64 +11,95 @@ sinonims = {["arctg", "arctag"] : "atan",
                   ["e", "E"] : "exp",
                   ["pi", ] : "PI"}
 '''
-info = { "label": "function",
-          "data": False,
-         "color": "b",
-             "x": np.arange(-10, 10, 0.1),
-             "y": None,
-        "xlabel": 'x label',#None
-        "ylabel": 'y label',#None
-         "title": "Plotter result",
-        "legend": True
-        }
 
 class Plotter():
     
     def __init__(self):
         self.parser = Parser()
-        self.funcs = {}
-            
-    def get(self):
-        return self.funcs
-
-    def set(self, funcs):
-        # parsing
-        self.funcs = {k:self.parser.parse(k) for k in funcs}
+        self.functions = {}
+        self.fInfo = {}    
+        self.info = { "label": "function",
+                      "data": False,
+                     "color": "b",
+                         "x": np.arange(-5.0, 5.0, 0.01),
+                         "y": [-3.0, 3.0],
+                    "x:abel": 'x label',#None
+                    "yLabel": 'y label',#None
+               "xyLabelTrue": False,
+                     "title": "Plotter result",
+                    "legend": True
+                }
         
-    def add(self, f):
+    def get(self):
+        return self.functions
+
+    def add(self, f, **exInfo):
         # add function to Plotter
-        self.funcs[f] = self.parser.parse(f)
+        expression = self.parser.check(f)
+        if expression != None:
+            self.functions[f] = expression
+        if exInfo:
+            self.fInfo[f] = exInfo
+        else:
+            info = self.info.copy()
+            info['label'] = f
+            self.fInfo[f] = info
 
     def delete(self, f):
         # delete function from Plotter
-        self.funcs.pop(f)
+        self.functions.pop(f)
 
-    def setInfo(self, **info):
-        if info == {}:
-            return
-        if not info["data"]:
-            info["y"] = np.array([self.funcs[f].evaluate({'x':i}) for i in info["x"]])
-        plt.xlabel(info["xlabel"])
-        plt.ylabel(info["ylabel"])
-        plt.title(info["title"])
+    def getXY(self, f):
+        x = []
+        y = []
+        d = self.functions[f].symbols()
+        for i in self.fInfo[f]['x']:
+            try:
+                z = self.functions[f].evaluate({d[0]:i})
+                if self.fInfo[f]['y'][0] < z < self.fInfo[f]['y'][1]:
+                    y.append(z)
+                    x.append(i)
+            except ValueError:
+                print("on argument x = " + i + " hasn't continuity")
+        return {'x': np.array(x), 'y': np.array(y)}
+    
+    def plotF(self, f): 
+        d = self.functions[f].symbols()
+        if len(d) != 1:
+            raise Exception('too much arguments of function')
+        if self.fInfo[f]["xyLabelTrue"]:
+            plt.xlabel(self.fInfo[f]["xlabel"])
+            plt.ylabel(self.fInfo[f]["ylabel"])
+        plt.title(self.fInfo[f]["title"])
+        s = self.getXY(f)
+        plt.plot(s['x'], s['y'], label=self.fInfo[f]['label'])
 
-    def plot(self, f = [], **info):
+    def plot(self, f = None, legend = False):
         # plot the function
-        self.setInfo(info = info)
-        if f == [] and self.funcs == {}:
-            print("nothing to plot")
-            return
-        elif f == []:
-            for func in self.funcs.keys():
-                info["y"] = np.array([self.func.evaluate({'x':i}) for i in info["x"]])
-                plt.plot(info["x"], info["y"], label=info["label"])        
-        elif len(f) == 1 and (f[0] in self.funcs):
-            plt.plot(info["x"], info["y"], label=info["label"])
+        if f in self.functions.keys():  # when f exists
+            self.plotF(f)
+        else:
+            for f in self.functions:
+                self.plotF(f)
+        if legend:
+            plt.legend()
         plt.show()
 
 plotter = Plotter()
+plotter.add('1/t')
+plotter.add('1/(1-t)')
+plotter.add('sin(x)')
 try:
-    plotter.add('sin(x)')
-    plotter.plot(info=info)
+    plotter.plot('1/t')
+    #plotter.plot('1/(1-t)')
+    #plotter.plot('sin(x)')
+    #plotter.plot(legend = True)
+    #print(plotter.get())
 except Exception as e:
     print(e)
+    '''
+                except Exception:
+                    print("Plotter: can't plot of range " + info["x"] + " this function " + f)
+                return
+    '''
+
