@@ -1,29 +1,18 @@
-import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
 from parser import Parser
-'''
-sinonims = {["arctg", "arctag"] : "atan", 
-                  ["arcsin",] : "asin",
-                  ["arccos",] : "acos",
-                  ["ln", ] : "log",
-                  ["tg", ] : "tan",
-                  ["e", "E"] : "exp",
-                  ["pi", ] : "PI"}
-'''
 
-class Plotter():
-    
+
+class Plotter():    
     def __init__(self):
         self.parser = Parser()
         self.functions = {}
         self.fInfo = {}    
         self.info = { "label": "function",
                       "data": False,
-                     "color": "b",
-                         "x": np.linspace(-1.0, 1.0, 51),
+                     "color": "b",#
+                         "x": np.linspace(-5.0, 5.0, 101),
                          "y": None,
-                    "yRange": [-3.0, 3.0],
                     "xLabel": 'x label',
                     "yLabel": 'y label',
                "xyLabelTrue": False,
@@ -32,7 +21,6 @@ class Plotter():
                 }
         
     def add(self, f, **exInfo):
-        # add function to Plotter
         expression = self.parser.check(f)
         if expression != None:
             self.functions[f] = expression
@@ -47,7 +35,6 @@ class Plotter():
             self.fInfo[f] = info
 
     def delete(self, f):
-        # delete function from Plotter
         self.functions.pop(f)
 
     def setY(self, f, x):
@@ -69,33 +56,30 @@ class Plotter():
             self.setY(f, d[0])
             plt.plot(F['x'], F['y'], label=F['label'])
         except Exception as e:
-            print("evaluate: " + f + " doesn't evaluate")
+            print("evaluate: " + f + " doesn't evaluate") 
 
     def plot(self, f = None, legend = False):
-        # plot the function
-        if f in self.functions.keys():  # when f exists
+        if f in self.functions.keys():
             self.plotF(f)
         else:
             for f in self.functions:
                 self.plotF(f)
         if legend:
             plt.legend()
+        plt.ylim(-5, 5)
+        plt.savefig('plot' + '.png')
         plt.show()
-
+         
 plotter = Plotter()
+
+'exp(x)'
+'-10 10'
+
 plotter.add('abs(x)')
 plotter.add('exp(x)')
+plotter.add('x^2')
 try:
     plotter.plot(legend = True)
-    #plotter.plot('logx')
-    #plotter.plot('logx-')
-    #plotter.plot('abs(x)')
-    #plotter.plot('exp(x)')
 except Exception as e:
     print(e)
 
-'''
-sin(1/(1+x^2))
-exp(-x^2)
-ln(1/(1+x^2))
-'''
