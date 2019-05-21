@@ -21,9 +21,10 @@ class Plotter():
         self.info = { "label": "function",
                       "data": False,
                      "color": "b",
-                         "x": np.arange(-5.0, 5.0, 0.01),
-                         "y": [-3.0, 3.0],
-                    "x:abel": 'x label',#None
+                         "x": np.linspace(-5.0, 5.0, 151),
+                         "y": None,
+                    "yRange": [-3.0, 3.0],
+                    "xLabel": 'x label',#None
                     "yLabel": 'y label',#None
                "xyLabelTrue": False,
                      "title": "Plotter result",
@@ -49,30 +50,21 @@ class Plotter():
         # delete function from Plotter
         self.functions.pop(f)
 
-    def getXY(self, f):
-        x = []
-        y = []
-        d = self.functions[f].symbols()
-        for i in self.fInfo[f]['x']:
-            try:
-                z = self.functions[f].evaluate({d[0]:i})
-                if self.fInfo[f]['y'][0] < z < self.fInfo[f]['y'][1]:
-                    y.append(z)
-                    x.append(i)
-            except ValueError:
-                print("on argument x = " + i + " hasn't continuity")
-        return {'x': np.array(x), 'y': np.array(y)}
-    
+    def setY(self, f, x):
+        y = [self.functions[f].evaluate({x:i}) for i in self.fInfo[f]['x']]
+        self.fInfo[f]['y'] = np.array(y)
+
     def plotF(self, f): 
         d = self.functions[f].symbols()
         if len(d) != 1:
             raise Exception('too much arguments of function')
-        if self.fInfo[f]["xyLabelTrue"]:
-            plt.xlabel(self.fInfo[f]["xlabel"])
-            plt.ylabel(self.fInfo[f]["ylabel"])
-        plt.title(self.fInfo[f]["title"])
-        s = self.getXY(f)
-        plt.plot(s['x'], s['y'], label=self.fInfo[f]['label'])
+        F = self.fInfo[f]
+        if F["xyLabelTrue"]:
+            plt.xlabel(F["xlabel"])
+            plt.ylabel(F["ylabel"])
+        plt.title(F["title"])
+        self.setY(f, d[0])
+        plt.plot(F['x'], F['y'], label=F['label'])
 
     def plot(self, f = None, legend = False):
         # plot the function
@@ -89,17 +81,12 @@ plotter = Plotter()
 plotter.add('1/t')
 plotter.add('1/(1-t)')
 plotter.add('sin(x)')
-try:
-    plotter.plot('1/t')
+#try:
+#plotter.plot('1/t')
     #plotter.plot('1/(1-t)')
     #plotter.plot('sin(x)')
-    #plotter.plot(legend = True)
+plotter.plot(legend = True)
     #print(plotter.get())
-except Exception as e:
-    print(e)
-    '''
-                except Exception:
-                    print("Plotter: can't plot of range " + info["x"] + " this function " + f)
-                return
-    '''
+#except Exception as e:
+ #   print(e)
 
