@@ -10,8 +10,8 @@ class Plotter():
         self.fInfo = {}    
         self.info = { "label": "function",
                       "data": False,
-                     "color": "b",#
-                         "x": np.linspace(-5.0, 5.0, 101),
+                     "color": "b",
+                         "x": np.linspace(-5.0, 5.0, 501),
                          "y": None,
                     "xLabel": 'x label',
                     "yLabel": 'y label',
@@ -54,6 +54,7 @@ class Plotter():
         plt.title(F["title"])
         try:
             self.setY(f, d[0])
+            F['y'][:-1][np.abs(np.diff(F['y'])) > 0.5] = np.nan
             plt.plot(F['x'], F['y'], label=F['label'])
         except Exception as e:
             print("evaluate: " + f + " doesn't evaluate") 
@@ -75,9 +76,11 @@ plotter = Plotter()
 'exp(x)'
 '-10 10'
 
-plotter.add('abs(x)')
-plotter.add('exp(x)')
-plotter.add('x^2')
+plotter.add('exp(1/x)')
+plotter.add('tan(x)')
+plotter.add('sin(x)')
+plotter.add('1/t')
+#plotter.add('sin(1/(x^2 + 1))')
 try:
     plotter.plot(legend = True)
 except Exception as e:
