@@ -1,6 +1,6 @@
 import matplotlib.pyplot as plt
 import numpy as np
-from parser import Parser
+from py_expression_eval import Parser
 
 
 class Plotter():
@@ -20,8 +20,16 @@ class Plotter():
                      "legend": True
                      }
 
+    def check(self, expr):
+        try:
+            e = self.parser.parse(expr)
+        except Exception as e:
+            print(e)
+            return None
+        return e
+
     def add(self, f, **exInfo):
-        expression = self.parser.check(f)
+        expression = self.check(f)
         if expression is not None:
             self.functions[f] = expression
         else:
@@ -35,29 +43,59 @@ class Plotter():
             self.fInfo[f] = info
 
     def delete(self, f):
-        self.functions.pop(f)
+        if f in self.functions:
+            self.functions.pop(f)
+
+    def clear(self):
+        plt.cla()
 
     def setY(self, f, x):
-        y = [self.functions[f].evaluate({x: i}) for i in self.fInfo[f]['x']]
-        self.fInfo[f]['y'] = np.array(y)
+        if x:
+            y = []
+            for i in self.fInfo[f]['x']:
+                try:
+                    y.append(self.functions[f].evaluate({x: i}))
+                except ValueError as e:
+                    y.append(np.nan)
+            self.fInfo[f]['y'] = np.array(y)
+        else:
+            v = self.functions[f].evaluate({})
+            self.fInfo[f]['y'] = np.array(len(self.fInfo[f]['x']) * [v])
 
-    def plotF(self, f):
-        d = self.functions[f].symbols()
-        if len(d) != 1:
-            raise Exception('too much arguments of function')
-        elif d[0] == f:
-            raise Exception("plotF: error input, the function " + f)
-        F = self.fInfo[f]
+    def findArg(self, d):
+        count = 0
+        j = 0
+        for i in d:
+            if len(i) == 1 and (not i in ['e', 'E']):
+                count += 1
+                j = i
+        
+        return {'count': count, 'x': False or j}
+
+    def setText(self, F):
         if F["xyLabelTrue"]:
             plt.xlabel(F["xlabel"])
             plt.ylabel(F["ylabel"])
         plt.title(F["title"])
+
+    def plotF(self, f):
+        if not f in self.functions:
+            return
+        symbols = self.findArg(self.functions[f].symbols())
+        if symbols['count'] > 1:
+            raise Exception('too much arguments of function' + f)
+        elif symbols['x'] == f and len(f) > 1:
+            raise Exception("plotF: error input, the function " + f)
+        F = self.fInfo[f]
+        self.setText(F)
         try:
-            self.setY(f, d[0])
-            F['y'][:-1][np.abs(np.diff(F['y'])) > 0.5] = np.nan
+            self.setY(f, symbols['x'])
+            if symbols['x']:
+                F['y'][:-1][np.abs(np.diff(F['y'])) > 0.6] = np.nan
             plt.plot(F['x'], F['y'], label=F['label'])
         except Exception as e:
             print("evaluate: " + f + " doesn't evaluate")
+            print(e)
 
     def plot(self, f=None, legend=False):
         if f in self.functions.keys():
@@ -71,14 +109,7 @@ class Plotter():
         plt.savefig('plot' + '.png')
         plt.show()
 
-
-plotter = Plotter()
-plotter.add('exp(1/x)')
-plotter.add('tan(x)')
-plotter.add('sin(x)')
-plotter.add('1/t')
-#plotter.add('sin(1/(x^2 + 1))')
-try:
-    plotter.plot(legend=True)
-except Exception as e:
-    print(e)
+    def deleteAll(self):
+        self.functions.clear()
+        self.fInfo.clear()
+        
