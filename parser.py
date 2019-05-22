@@ -1,15 +1,4 @@
 #! /usr/bin/env python
-# -*- coding: utf-8 -*-
-# Author: AxiaCore S.A.S. http://axiacore.com
-#
-# Based on js-expression-eval, by Matthew Crumley (email@matthewcrumley.com, http://silentmatt.com/)
-# https://github.com/silentmatt/js-expression-eval
-#
-# Ported to Python and modified by Vera Mazhuga (ctrl-alt-delete@live.com, http://vero4ka.info/)
-#
-# You are free to use and modify this code in anyway you find useful. Please leave this comment in the code
-# to acknowledge its original source. If you feel like it, I enjoy hearing about projects that use my code,
-# but don't feel like you have to let me know or ask permission.
 from __future__ import division
 
 import math
@@ -29,7 +18,7 @@ class Token():
         self.type_ = type_
         self.index_ = index_ or 0
         self.prio_ = prio_ or 0
-        self.number_ = number_ if number_ != None else 0
+        self.number_ = number_ if number_ is not None else 0
 
     def toString(self):
         if self.type_ == TNUMBER:
@@ -107,7 +96,6 @@ class Expression():
         ret = Expression(newexpression, self.ops1, self.ops2, self.functions)
         return ret
 
-
     def evaluate(self, values):
         values = values or {}
         nstack = []
@@ -136,7 +124,7 @@ class Expression():
                 n1 = nstack.pop()
                 f = nstack.pop()
                 if callable(f):
-                    if type(n1) is list:
+                    if isinstance(n1, list):
                         nstack.append(f(*n1))
                     else:
                         nstack.append(f(n1))
@@ -155,10 +143,10 @@ class Expression():
             item = self.tokens[i]
             type_ = item.type_
             if type_ == TNUMBER:
-                if type(item.number_) == str:
-                    nstack.append("'"+item.number_+"'")
+                if isinstance(item.number_, str):
+                    nstack.append("'" + item.number_ + "'")
                 else:
-                    nstack.append( item.number_)
+                    nstack.append(item.number_)
             elif type_ == TOP2:
                 n2 = nstack.pop()
                 n1 = nstack.pop()
@@ -166,7 +154,7 @@ class Expression():
                 if toJS and f == '^':
                     nstack.append('math.pow(' + n1 + ',' + n2 + ')')
                 else:
-                    frm='({n1}{f}{n2})'
+                    frm = '({n1}{f}{n2})'
                     if f == ',':
                         frm = '{n1}{f}{n2}'
 
@@ -175,7 +163,6 @@ class Expression():
                         n2=n2,
                         f=f,
                     ))
-
 
             elif type_ == TVAR:
                 nstack.append(item.index_)
@@ -203,7 +190,7 @@ class Expression():
         vars = []
         for i in range(0, len(self.tokens)):
             item = self.tokens[i]
-            if item.type_ == TVAR and not item.index_ in vars:
+            if item.type_ == TVAR and item.index_ not in vars:
                 vars.append(item.index_)
         return vars
 
@@ -218,14 +205,14 @@ class Parser:
     class Expression(Expression):
         pass
 
-    PRIMARY      = 1
-    OPERATOR     = 2
-    FUNCTION     = 4
-    LPAREN       = 8
-    RPAREN       = 16
-    COMMA        = 32
-    SIGN         = 64
-    CALL         = 128
+    PRIMARY = 1
+    OPERATOR = 2
+    FUNCTION = 4
+    LPAREN = 8
+    RPAREN = 16
+    COMMA = 32
+    SIGN = 64
+    CALL = 128
     NULLARY_CALL = 256
 
     def add(self, a, b):
@@ -243,35 +230,35 @@ class Parser:
     def mod(self, a, b):
         return a % b
 
-    def concat(self, a, b,*args):
-        result=u'{0}{1}'.format(a, b)
+    def concat(self, a, b, *args):
+        result = u'{0}{1}'.format(a, b)
         for arg in args:
-            result=u'{0}{1}'.format(result, arg)
+            result = u'{0}{1}'.format(result, arg)
         return result
 
-    def equal (self, a, b ):
+    def equal(self, a, b):
         return a == b
 
-    def notEqual (self, a, b ):
+    def notEqual(self, a, b):
         return a != b
 
-    def greaterThan (self, a, b ):
+    def greaterThan(self, a, b):
         return a > b
 
-    def lessThan (self, a, b ):
+    def lessThan(self, a, b):
         return a < b
 
-    def greaterThanEqual (self, a, b ):
+    def greaterThanEqual(self, a, b):
         return a >= b
 
-    def lessThanEqual (self, a, b ):
+    def lessThanEqual(self, a, b):
         return a <= b
 
-    def andOperator (self, a, b ):
-        return ( a and b )
+    def andOperator(self, a, b):
+        return (a and b)
 
-    def orOperator (self, a, b ):
-        return  ( a or  b )
+    def orOperator(self, a, b):
+        return (a or b)
 
     def neg(self, a):
         return -a
@@ -285,11 +272,11 @@ class Parser:
     def pyt(self, a, b):
         return math.sqrt(a * a + b * b)
 
-    def ifFunction(self,a,b,c):
+    def ifFunction(self, a, b, c):
         return b if a else c
 
     def append(self, a, b):
-        if type(a) != list:
+        if not isinstance(a, list):
             return [a, b]
         a.append(b)
         return a
@@ -355,7 +342,7 @@ class Parser:
             'pyt': self.pyt,
             'pow': math.pow,
             'atan2': math.atan2,
-            'concat':self.concat,
+            'concat': self.concat,
             'if': self.ifFunction
         }
 
@@ -535,7 +522,7 @@ class Parser:
 
         # number in scientific notation
         pattern = r'([-+]?([0-9]*\.?[0-9]*)[eE][-+]?[0-9]+).*'
-        match = re.match(pattern, self.expression[self.pos: ])
+        match = re.match(pattern, self.expression[self.pos:])
         if match:
             self.pos += len(match.group(1))
             self.tokennumber = float(match.group(1))
@@ -546,7 +533,7 @@ class Parser:
         while self.pos < len(self.expression):
             code = self.expression[self.pos]
             if (code >= '0' and code <= '9') or code == '.':
-                if (len(str) == 0 and code == '.' ):
+                if (len(str) == 0 and code == '.'):
                     str = '0'
                 str += code
                 self.pos += 1
@@ -616,7 +603,8 @@ class Parser:
         r = False
         str = ''
         startpos = self.pos
-        if self.pos < len(self.expression) and self.expression[self.pos] == "'":
+        if self.pos < len(
+                self.expression) and self.expression[self.pos] == "'":
             self.pos += 1
             while self.pos < len(self.expression):
                 code = self.expression[self.pos]
@@ -633,13 +621,15 @@ class Parser:
     def isConst(self):
         for i in self.consts:
             L = len(i)
-            str = self.expression[self.pos:self.pos+L]
+            str = self.expression[self.pos:self.pos + L]
             if i == str:
                 if len(self.expression) <= self.pos + L:
                     self.tokennumber = self.consts[i]
                     self.pos += L
                     return True
-                if not self.expression[self.pos + L].isalnum() and self.expression[self.pos + L] != "_":
+                if not self.expression[self.pos +
+                                       L].isalnum() and self.expression[self.pos +
+                                                                        L] != "_":
                     self.tokennumber = self.consts[i]
                     self.pos += L
                     return True
@@ -651,8 +641,8 @@ class Parser:
             ('-', 2, '-'),
             ('**', 6, '**'),
             ('*', 3, '*'),
-            (u'\u2219', 3, '*'), # bullet operator
-            (u'\u2022', 3, '*'), # black small circle
+            (u'\u2219', 3, '*'),  # bullet operator
+            (u'\u2022', 3, '*'),  # black small circle
             ('/', 4, '/'),
             ('%', 4, '%'),
             ('^', 6, '^'),
@@ -704,10 +694,10 @@ class Parser:
 
     def isComma(self):
         code = self.expression[self.pos]
-        if code==',':
-            self.pos+=1
-            self.tokenprio=-1
-            self.tokenindex=","
+        if code == ',':
+            self.pos += 1
+            self.tokenprio = -1
+            self.tokenindex = ","
             return True
         return False
 
@@ -754,7 +744,8 @@ class Parser:
         for i in range(self.pos, len(self.expression)):
             c = self.expression[i]
             if c.lower() == c.upper():
-                if ((i == self.pos and c != '"') or (not (c in '_."') and (c < '0' or c > '9'))) and not inQuotes :
+                if ((i == self.pos and c != '"') or (not (c in '_."')
+                                                     and (c < '0' or c > '9'))) and not inQuotes:
                     break
             if c == '"':
                 inQuotes = not inQuotes
