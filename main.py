@@ -1,6 +1,5 @@
 from tkinter import *
-from glob import glob
-from tkinter.messagebox import askyesno, showwarning, showinfo
+from tkinter.messagebox import askyesno, showwarning
 from tkinter.colorchooser import askcolor
 import subprocess
 
@@ -44,7 +43,6 @@ class PyPlot(Frame):
         if a:
             showwarning('WARNING', a)
 
-
     def makeWidgets(self):
         """Функция , которая строит виджеты
 
@@ -77,9 +75,8 @@ class PyPlot(Frame):
         help = open('help.txt')
         help_mess = help.read()
         help.close()
-        #showinfo('Help', help_mess)
         msg = Message(win, text=help_mess)
-        msg.config(font=('times',16,'italic'))
+        msg.config(font=('times', 16, 'italic'))
         msg.pack(fill=X, expand=YES)
         win.mainloop()
 
