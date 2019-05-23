@@ -17,9 +17,9 @@ class Plotter():
                      "yLabel": 'y label',
                      "xyLabelTrue": False,
                      "title": "Plotter result",
-                     "legend": True
-                     }
+                     "legend": True}
 
+    # checks expression
     def check(self, expr):
         try:
             e = self.parser.parse(expr)
@@ -28,6 +28,7 @@ class Plotter():
             return None
         return e
 
+    # add function, type str
     def add(self, f, **exInfo):
         expression = self.check(f)
         if expression is not None:
@@ -42,13 +43,16 @@ class Plotter():
             info['label'] = f
             self.fInfo[f] = info
 
+    # delete function of set
     def delete(self, f):
         if f in self.functions:
             self.functions.pop(f)
 
+    # clear plot area
     def clear(self):
         plt.cla()
 
+    # compute y = f(x)
     def setY(self, f, x):
         if x:
             y = []
@@ -62,6 +66,7 @@ class Plotter():
             v = self.functions[f].evaluate({})
             self.fInfo[f]['y'] = np.array(len(self.fInfo[f]['x']) * [v])
 
+    # finds arg of function
     def findArg(self, d):
         count = 0
         j = 0
@@ -72,12 +77,14 @@ class Plotter():
 
         return {'count': count, 'x': False or j}
 
+    # set labels of plot
     def setText(self, F):
         if F["xyLabelTrue"]:
             plt.xlabel(F["xlabel"])
             plt.ylabel(F["ylabel"])
         plt.title(F["title"])
 
+    # draw one function f
     def plotF(self, f):
         if f not in self.functions:
             return
@@ -97,6 +104,7 @@ class Plotter():
             print("evaluate: " + f + " doesn't evaluate")
             print(e)
 
+    # plots and shows functions, if f=None plots all
     def plot(self, f=None, legend=False):
         if f in self.functions.keys():
             self.plotF(f)
@@ -109,6 +117,7 @@ class Plotter():
         plt.savefig('plot' + '.png')
         plt.show()
 
+    # clear plot area and functions set
     def deleteAll(self):
         self.clear()
         self.functions.clear()
