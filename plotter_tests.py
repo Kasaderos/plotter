@@ -30,25 +30,34 @@ class TestPlotter(unittest.TestCase):
                  'cos(x)': 'x',
                  '1+t+t^2': 't',
                  'acos(t/(t+1))': 't',
-                 'e^2+T': 't'}
+                 'e^2+T': 'T'}
         for e in exprs.keys():
             v = self.plotter.parser.parse(e).symbols()
             d = self.plotter.findArg(v)
             self.assertTrue(d['x'] == exprs[e])
 
-    def test_plotF(self):
-        for i in self.functions:
-            self.plotter.add(i)
-        for i in self.functions:
-            self.plotter.plotF(i)
-
     def test_plot(self):
         self.plotter.clear()
         self.plotter.deleteAll()
+        print("try plot 2, 1, 0, -1, -2, e^(-t) * cos(2*pi*t)")
         self.plotter.add('2')
         self.plotter.add('1')
         self.plotter.add('0')
         self.plotter.add('-1')
         self.plotter.add('-2')
         self.plotter.add('exp(-t) * cos(2*PI*t)') 
-        #self.plotter.plot()
+        self.plotter.plot()
+        self.plotter.deleteAll()
+        print("try plot tan(x)")
+        self.plotter.add('tan(x)') 
+        self.plotter.plot()
+        self.plotter.deleteAll()
+        print("try plot sin(x)+x")
+        self.plotter.add('sin(x)+x') 
+        self.plotter.plot()
+        self.plotter.deleteAll()
+        print("try plot 1+x+x^2")
+        self.plotter.add('1+x+x^2') 
+        self.plotter.plot()
+        self.plotter.deleteAll()
+        

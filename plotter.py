@@ -66,10 +66,10 @@ class Plotter():
         count = 0
         j = 0
         for i in d:
-            if len(i) == 1 and (not i in ['e', 'E']):
+            if len(i) == 1 and (i not in ['e', 'E']):
                 count += 1
                 j = i
-        
+
         return {'count': count, 'x': False or j}
 
     def setText(self, F):
@@ -79,7 +79,7 @@ class Plotter():
         plt.title(F["title"])
 
     def plotF(self, f):
-        if not f in self.functions:
+        if f not in self.functions:
             return
         symbols = self.findArg(self.functions[f].symbols())
         if symbols['count'] > 1:
@@ -91,7 +91,7 @@ class Plotter():
         try:
             self.setY(f, symbols['x'])
             if symbols['x']:
-                F['y'][:-1][np.abs(np.diff(F['y'])) > 0.6] = np.nan
+                F['y'][:-1][np.abs(np.diff(F['y'])) > 10.0] = np.nan
             plt.plot(F['x'], F['y'], label=F['label'])
         except Exception as e:
             print("evaluate: " + f + " doesn't evaluate")
@@ -110,6 +110,6 @@ class Plotter():
         plt.show()
 
     def deleteAll(self):
+        self.clear()
         self.functions.clear()
         self.fInfo.clear()
-        
