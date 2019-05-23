@@ -1,21 +1,21 @@
 import unittest
 from plotter import Plotter
-import matplotlib.pyplot as plt
+
 
 class TestPlotter(unittest.TestCase):
-    
+
     def setUp(self):
         self.plotter = Plotter()
-        self.functions = ['', 
-                          'x', 
-                          'log(x)', 
-                          '1+x^2+x^3', 
+        self.functions = ['',
+                          'x',
+                          'log(x)',
+                          '1+x^2+x^3',
                           '1/x',
                           'tan(x)',
                           'exp(1/x)',
                           '0',
                           '4',
-                          'abs(x)'] 
+                          'abs(x)']
 
     def test_add_delete(self):
         for i in self.functions:
@@ -45,19 +45,18 @@ class TestPlotter(unittest.TestCase):
         self.plotter.add('0')
         self.plotter.add('-1')
         self.plotter.add('-2')
-        self.plotter.add('exp(-t) * cos(2*PI*t)') 
+        self.plotter.add('exp(-t) * cos(2*PI*t)')
         self.plotter.plot()
         self.plotter.deleteAll()
         print("try plot tan(x)")
-        self.plotter.add('tan(x)') 
+        self.plotter.add('tan(x)')
         self.plotter.plot()
         self.plotter.deleteAll()
         print("try plot sin(x)+x")
-        self.plotter.add('sin(x)+x') 
+        self.plotter.add('sin(x)+x')
         self.plotter.plot()
         self.plotter.deleteAll()
         print("try plot 1+x+x^2")
-        self.plotter.add('1+x+x^2') 
+        self.plotter.add('1+x+x^2')
         self.plotter.plot()
         self.plotter.deleteAll()
-        
