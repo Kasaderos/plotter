@@ -1,6 +1,6 @@
 import unittest
 from plotter import Plotter
-
+import matplotlib.pyplot as plt
 
 class TestPlotter(unittest.TestCase):
 
@@ -37,6 +37,7 @@ class TestPlotter(unittest.TestCase):
             self.assertTrue(d['x'] == exprs[e])
 
     def test_plot(self):
+        print()
         self.plotter.clear()
         self.plotter.deleteAll()
         print("try plot 2, 1, 0, -1, -2, e^(-t) * cos(2*pi*t)")
@@ -47,16 +48,24 @@ class TestPlotter(unittest.TestCase):
         self.plotter.add('-2')
         self.plotter.add('exp(-t) * cos(2*PI*t)')
         self.plotter.plot()
+        plt.savefig('tests_result/1.png')
         self.plotter.deleteAll()
         print("try plot tan(x)")
         self.plotter.add('tan(x)')
         self.plotter.plot()
+        plt.savefig('tests_result/2.png')
         self.plotter.deleteAll()
         print("try plot sin(x)+x")
         self.plotter.add('sin(x)+x')
         self.plotter.plot()
+        plt.savefig('tests_result/3.png')
         self.plotter.deleteAll()
         print("try plot 1+x+x^2")
         self.plotter.add('1+x+x^2')
         self.plotter.plot()
+        plt.savefig('tests_result/4.png')
+        self.plotter.deleteAll()
+        self.plotter.add('sin(abs(x))')
+        self.plotter.plot()
+        plt.savefig('tests_result/5.png')
         self.plotter.deleteAll()

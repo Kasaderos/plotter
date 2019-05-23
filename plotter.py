@@ -115,7 +115,6 @@ class Plotter():
             plt.legend()
         plt.ylim(-5, 5)
         plt.savefig('plot' + '.png')
-        plt.show()
 
     # clear plot area and functions set
     def deleteAll(self):
