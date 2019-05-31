@@ -65,6 +65,7 @@ class TestPlotter(unittest.TestCase):
         self.plotter.plot()
         plt.savefig('tests_result/4.png')
         self.plotter.deleteAll()
+        print("try plot sin(abs(x))")
         self.plotter.add('sin(abs(x))')
         self.plotter.plot()
         plt.savefig('tests_result/5.png')

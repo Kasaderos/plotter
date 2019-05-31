@@ -1,10 +1,10 @@
 import matplotlib.pyplot as plt
 import numpy as np
-import sys
 from py_expression_eval import Parser
 import warnings
 
 warnings.filterwarnings("ignore")
+
 
 class Plotter():
     def __init__(self):
@@ -124,10 +124,3 @@ class Plotter():
         self.clear()
         self.functions.clear()
         self.fInfo.clear()
-        
-        
-p = Plotter()
-p.add(sys.argv[1])
-p.plot()
-
-        

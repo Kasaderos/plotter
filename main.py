@@ -1,8 +1,8 @@
 from tkinter import *
-from tkinter.messagebox import askyesno, showwarning
-from tkinter.colorchooser import askcolor
-import subprocess
-
+from tkinter.messagebox import askyesno
+import gettext
+import os
+from plotter import Plotter
 
 Size = (640, 480)
 
@@ -19,16 +19,6 @@ class PyPlot(Frame):
         self.opens = picdir
         self.drawn = None
 
-    def setBgColor(self):
-        """Функция, отвечающая за изменение заднего фона
-
-        Использует messagebox(askcolor) встроенный в tkinter.
-        """
-        (triple, hexstr) = askcolor()
-        if hexstr:
-            print(hexstr)
-            self.config(bg=hexstr)
-
     def OnEntry(self, input_str):
         '''Функция, которая выполняет свою работу после того как пользователь нажал на кнопку Entry или на Enter
 
@@ -37,11 +27,16 @@ class PyPlot(Frame):
         Если plotter.py выдаст исключение, то функция OnEntry используя messagebox (showwarning) покажет диалоговое
         окно пользователю.
         '''
-        a = subprocess.check_output(
-            ["python3", "plotter.py", input_str], universal_newlines=True)
+        # a = subprocess.check_output(
+        #    ["python3", "plotter.py", input_str], universal_newlines=True)
 
-        if a:
-            showwarning('WARNING', a)
+        # if a:
+        #    showwarning('WARNING', a)
+        p = Plotter()
+        p.add(input_str)
+        p.plot()
+        p.deleteAll()
+        del p
 
     def makeWidgets(self):
         """Функция , которая строит виджеты
@@ -51,20 +46,18 @@ class PyPlot(Frame):
         ent = Entry(relief=SUNKEN, width=50)
         ent.insert(0, 'Type function here')
         ent.focus()
-        ent.bind('<Return>', (lambda event: self.OnEntry()))  # on enter key
+        ent.bind(
+            '<Return>',
+            (lambda event: self.OnEntry(
+                ent.get())))  # on enter key
         ent.pack()
-        Button(text='Entry', command=lambda: self.OnEntry(ent.get())).pack()
+        Button(text=_('Entry'), command=lambda: self.OnEntry(ent.get())).pack()
         height, width = self.size
         self.canvas = Canvas(self, bg='white', height=height, width=width)
         self.canvas.pack(side=LEFT, fill=BOTH, expand=YES)
-        Button(self, text='Plot', command=self.onPlot).pack(fill=X)
-        Button(
-            self,
-            text="set Background collor",
-            command=self.setBgColor).pack(
-            fill=X)
-        Button(self, text='Help', command=self.onHelp).pack(fill=X)
-        Button(self, text='Quit', command=self.onQuit).pack(fill=X)
+        Button(self, text=_('Plot'), command=self.onPlot).pack(fill=X)
+        Button(self, text=_('Help'), command=self.onHelp).pack(fill=X)
+        Button(self, text=_('Quit'), command=self.onQuit).pack(fill=X)
 
     def onHelp(self):
         """Функция, которая сработает если нажать на кнопку Help
@@ -85,12 +78,12 @@ class PyPlot(Frame):
 
         """
         name = './plot.png'
-        if self.drawn:
-            self.canvas.delete(self.drawn)
+        self.canvas.delete(self.drawn)
         img = PhotoImage(file=name)
         self.canvas.config(height=img.height(), width=img.width())
         self.drawn = self.canvas.create_image(2, 2, image=img, anchor=NW)
         self.image = name, img
+        os.remove('plot.png')
 
     def onQuit(self):
         """Функция , которая сработает при нажатии на кнопку Quit
@@ -104,8 +97,9 @@ class PyPlot(Frame):
 
 
 if __name__ == '__main__':
+    gettext.install('main', '.')
     root = Tk()
-    root.geometry('800x560')
+    root.geometry('800x600')
     root.title('PyPlotter 1.0')
     root.resizable(width=False, height=False)
     Label(root, text="Python Graph Plotter").pack()

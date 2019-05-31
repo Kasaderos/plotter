@@ -1,21 +1,21 @@
-PyPlotter поддерживает следующие функции:
+PyPlottersupports the following operations:
 
-+               оператор плюс
--               оператор минус
-*               о. умножения
-/               о. деления
-%               деление по модулю
-^               степень
-PI              константа пи(3.14)
-E               константа экспонента(2.7)
-sin(x)          синус
-cos(x)          косинус
-tan(x)          тангенс
-asin(x)         арксинус
-acos(x)         арккосинус
-atan(x)         арктангенс
-log(x)          натуральный логарифм
-log(x, base)    логарифм с основанием base
-abs(x)          модуль 	
-exp(x)          экспонента
++               operator plus
+-               operator minus
+*               multiplication operator
+/               division operator
+%               module division
+^               degree
+PI              const pi(3.14)
+E               const e(2.7)
+sin(x)          sine of x 
+cos(x)          cosine of 
+tan(x)          tangent of x 
+asin(x)         arcsine of x
+acos(x)         arccosine of x
+atan(x)         arctangent of x 
+log(x)          natural logarithm
+log(x, base)    logarithm of base 'base'
+abs(x)          module
+exp(x)          exponent
 
