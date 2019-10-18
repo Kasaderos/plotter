@@ -1,4 +1,5 @@
 # plotter
+HOMEWORK
 Простая GUI программа отрисовывают графики.
 
 ![alt text](gui_py.jpg)
